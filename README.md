@@ -1,37 +1,34 @@
-# Network Security Analytics (IDS)
+# Synthetic network classification demonstration
 
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange?style=flat-square)
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square)
-![Security](https://img.shields.io/badge/Domain-Cybersecurity-red?style=flat-square)
+A TensorFlow/Keras Conv1D model classifies generated connection records. The generator creates numeric features, optional categorical protocol/service/flag fields, and rule-based binary labels. It does not download or load NSL-KDD.
 
-A Deep Learning-based **Intrusion Detection System (IDS)** that demonstrates the use of **1D Convolutional Neural Networks (Conv1D)** applied to network connection records.
+## Implementation and evaluation
 
-**Note:** This repository includes a synthetic data generator that mimics the feature structure of the **NSL-KDD** dataset for reproducibility.
+- `src/data_utils.py`: synthetic generator plus numeric MinMax scaling and categorical one-hot encoding.
+- `src/model.py`: Conv1D, batch normalization, pooling, dropout, and dense binary classification.
+- `train.py`: stratified 60/20/20 train/validation/test split of raw records. Preprocessing fits on training data only; early stopping uses validation data; final metrics use the held-out test set.
 
-## ⚡ Technical Highlights
-* **Architecture:** 1D-CNN for temporal/spatial feature extraction from connection records.
-* **Preprocessing:** MinMax scaling for continuous variables and One-Hot encoding for categorical fields (`protocol_type`, `service`, `flag`).
-* **Evaluation:** Precision, Recall, F1-Score, and ROC-AUC are computed on a stratified test split to ensure robust performance assessment on imbalanced data.
+## Run from the repository root
 
-## 📊 Model Architecture
-The model treats network connection records as sequential 1D signals, allowing the CNN to learn local correlations between traffic features.
+```sh
+python -m venv .venv
+# Activate the environment for your operating system.
+python -m pip install -r requirements.txt
+python train.py
+```
 
-| Layer | Type | filters/Units | Activation |
-| :--- | :--- | :--- | :--- |
-| **Input** | Feature Vector | - | - |
-| **Conv1D** | Spatial Filtering | 64 | ReLU |
-| **BatchNormalization**| Stabilization | - | - |
-| **MaxPooling** | Downsampling | - | - |
-| **Dense** | Classification | 1 (Binary) | Sigmoid |
+Generated artifacts: `models/ids_cnn_model.keras`, `models/preprocessor.joblib`, and `models/evaluation.json`. Artifacts are ignored by Git; publish a reviewed evaluation record separately when reporting results. Load only trusted model and joblib files.
 
-## 📂 Repository Structure
-* `src/model.py`: TensorFlow/Keras CNN architecture definition.
-* `src/data_utils.py`: Synthetic data generator and preprocessing pipeline.
-* `train.py`: Training script with stratified splitting, early stopping, and metrics.
-* `requirements.txt`: Project dependencies.
+## Limitations
 
-## 🚀 Usage
-1. Install dependencies:
-   `pip install -r requirements.txt`
-2. Train the IDS model:
-   `python train.py`
+No real traffic or deployment integration is included. Synthetic labels are generated from the same input features, so performance demonstrates learning the generator's rule. A convolution over tabular feature order is a modeling choice, not proof of temporal traffic analysis. Compare simpler tabular baselines before selecting this architecture for real data.
+
+Preprocessing is fitted on training data only and the test set is never used for early stopping, so test metrics are free of that leakage.
+
+## Targeted checks
+
+Run `python test_evaluation.py` from the repository root after installing dependencies.
+
+## License
+
+Released under the [MIT License](LICENSE).

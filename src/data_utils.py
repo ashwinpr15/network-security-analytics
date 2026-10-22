@@ -47,28 +47,23 @@ def generate_network_data(n_samples=5000, include_categorical=True):
 
     return df
 
-def preprocess_data(df):
+def preprocess_data(df, preprocessor=None):
     """
-    Scales features and One-Hot Encodes categoricals.
+    Fit preprocessing on training records only; reuse it for validation/test.
     Returns: X_reshaped (for CNN), y, preprocessor
     """
     y = df['label'].values
     X = df.drop(columns=['label'])
 
-    # Identify columns
-    numeric_cols = X.select_dtypes(include=['number']).columns.tolist()
-    cat_cols = X.select_dtypes(include=['object']).columns.tolist()
-
-    # Define Transformers
-    transformers = [
-        ('num', MinMaxScaler(), numeric_cols),
-        ('cat', OneHotEncoder(sparse_output=False, handle_unknown='ignore'), cat_cols)
-    ]
-
-    preprocessor = ColumnTransformer(transformers)
-    X_transformed = preprocessor.fit_transform(X)
-
-    # Reshape for Conv1D: (Samples, Features, 1)
-    X_reshaped = X_transformed.reshape(X_transformed.shape[0], X_transformed.shape[1], 1)
-
-    return X_reshaped, y, preprocessor
+    if preprocessor is None:
+        numeric_cols = X.select_dtypes(include=['number']).columns.tolist()
+        cat_cols = X.select_dtypes(include=['object', 'string']).columns.tolist()
+        transformers = [('num', MinMaxScaler(), numeric_cols)]
+        if cat_cols:
+            transformers.append(('cat', OneHotEncoder(sparse_output=False, handle_unknown='ignore'), cat_cols))
+        preprocessor = ColumnTransformer(transformers)
+        transformed = preprocessor.fit_transform(X)
+    else:
+        transformed = preprocessor.transform(X)
+    reshaped = transformed.reshape(transformed.shape[0], transformed.shape[1], 1)
+    return reshaped, y, preprocessor
