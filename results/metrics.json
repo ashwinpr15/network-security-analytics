@@ -1,0 +1,52 @@
+{
+  "dataset": "generated synthetic connection records; not NSL-KDD",
+  "seed": 42,
+  "split_sizes": {
+    "train": 6000,
+    "validation": 2000,
+    "test": 2000
+  },
+  "roc_auc": 0.9583646275348303,
+  "classification_report": {
+    "0": {
+      "precision": 0.874381800197824,
+      "recall": 0.8920282542885973,
+      "f1-score": 0.8831168831168831,
+      "support": 991.0
+    },
+    "1": {
+      "precision": 0.8918099089989889,
+      "recall": 0.8741328047571854,
+      "f1-score": 0.8828828828828829,
+      "support": 1009.0
+    },
+    "accuracy": 0.883,
+    "macro avg": {
+      "precision": 0.8830958545984064,
+      "recall": 0.8830805295228914,
+      "f1-score": 0.882999882999883,
+      "support": 2000.0
+    },
+    "weighted avg": {
+      "precision": 0.8831742810880117,
+      "recall": 0.883,
+      "f1-score": 0.88299882999883,
+      "support": 2000.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      884,
+      107
+    ],
+    [
+      127,
+      882
+    ]
+  ],
+  "epochs_run": 11,
+  "logistic_regression_baseline": {
+    "accuracy": 0.894,
+    "roc_auc": 0.9663662756683292
+  }
+}
