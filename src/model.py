@@ -6,9 +6,10 @@ def build_cnn_model(input_shape, dropout=0.3):
     Constructs a 1D-CNN with BatchNormalization and Dropout.
     """
     model = models.Sequential()
+    model.add(layers.Input(shape=input_shape))
 
     # 1. Feature Extraction
-    model.add(layers.Conv1D(filters=64, kernel_size=3, activation='relu', input_shape=input_shape))
+    model.add(layers.Conv1D(filters=64, kernel_size=3, activation='relu'))
     model.add(layers.BatchNormalization())
     model.add(layers.MaxPooling1D(pool_size=2))
     model.add(layers.Dropout(dropout))
@@ -18,7 +19,7 @@ def build_cnn_model(input_shape, dropout=0.3):
     model.add(layers.Dense(32, activation='relu'))
     model.add(layers.Dense(1, activation='sigmoid'))  # Binary Output
 
-    model.compile(optimizer='adam', 
-                  loss='binary_crossentropy', 
+    model.compile(optimizer='adam',
+                  loss='binary_crossentropy',
                   metrics=['accuracy'])
     return model
